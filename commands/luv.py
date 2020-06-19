@@ -1,18 +1,31 @@
 from pyrogram import Client, Filters
-import json
 from commands.tools import get_data
+from random import randint
+import json
 
 @Client.on_message(Filters.regex('^/luv$') | Filters.regex('^/luv@nullcomm_bot$'))
 def luv(client, message):
-	data = json.loads(str(message))
 
-	UID = data['from_user']['id']
-	GID = data['chat']['id']
-	name = data['from_user']['first_name']
+	data = get_data(message)
+	UID, GID = data['user']['id'], data['group']['id']
+	name = data['user']['f_name']
 
-	get_data(message)
+	phrases = [
+	'Ну не сегодня.',
+	'{0}, ты чего? Люди же смотрят!'.format(name),
+	'Я занята, давай потом...',
+	'Я не в настроении.',
+	'Не приставай, хватит.',
+	'Да как ты смеешь?',
+	'Я админа позову!',
+	'Ты странный какой-то.',
+	'Хотелка не выросла',
+	'**[эти дни]**'
+	]
+
+	print(message)
 
 	if UID == GID:
-		message.reply("~ И я люблю тебя, {0} <3 ~".format(name), UID)
+		message.reply('~ И я люблю тебя, {0} <3 ~'.format(name), UID)
 	else:
-		message.reply('Я не такая! Какого ты обо мне мнения?!')
+		message.reply(phrases[randint(0, len(phrases) - 1)])

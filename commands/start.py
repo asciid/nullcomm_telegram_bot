@@ -5,7 +5,7 @@ import json
 @Client.on_message(Filters.command('start') | Filters.regex('^/start@nullcomm_bot$'))
 def start(client, message):
 	data = get_data(message)
-	name = data['first_name']
+	name = data['user']['f_name']
 
 	msg = """Привет, {0}. Я - Нуль-тян, но ты можешь называть меня Аней.
 Я из nullcomm, и в этом чате я внимательно вас слушаю.

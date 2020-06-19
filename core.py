@@ -17,11 +17,12 @@
 	
 	   TODO:
 
-	* /getme: info about sender
+	* /weather  -- get weather in Yaroslavl
 
 		DONE:
 
 	* /start
+	* /getme
 	* /feedback *message*
 	* /alarm    *message* (optional)
 
@@ -41,15 +42,17 @@ else:
 	print('Осутствует конфигурационный файл bot.ini!')
 	exit()
 
-#  ----------
-# | Commands |
-#  ----------
-
 @app.on_message(Filters.regex('^/alarm') | Filters.regex('^/alarm@nullcomm_bot'))
 def alarm(client, message):
 
-	UID, GID, msg, name = get_data(message)
+	data = get_data(message)
+
+	UID, GID = data['user']['id'], data['group']['id']
+	msg = data['message']
+
 	reply = ""
+
+	### ! ОПТИМИЗИРОВАТЬ ЭТО ДЕРЬМО !
 
 	# /alarm smthn
 	#        ^ <-- 7
@@ -85,7 +88,10 @@ def alarm(client, message):
 @app.on_message(Filters.regex('^/feedback') | Filters.regex('^/feedback@nullcomm_bot'))
 def feedback(client, message):
 	
-	UID, GID, msg, name = get_data(message)
+	data = get_data(message)
+	UID = data['user']['id']
+	name = data['user']['f_name']
+	
 	argument = check_command(message, '/feedback', False)
 
 	if argument != 'err':

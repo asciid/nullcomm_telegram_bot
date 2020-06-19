@@ -3,26 +3,50 @@ import json
 
 admin_uid = 298686852
 nullcomm_gid = -1001292559576
+bot_nickname = "@nullcomm_bot"
 
 # "Long" commands (usually in groups and with Botfather's command list) look like:
 # /command@bot_nickname
-bot_nickname = "@nullcomm_bot"
 
 def get_data(message):
 	raw = json.loads(str(message))
 
-	UID = raw['from_user']['id']
-	GID = raw['chat']['id']
-	msg = raw['text']
-	first_name = raw['from_user']['first_name']
-	#data = {'UID': UID, 'GID': GID, 'msg': msg, 'first_name': first_name}
+	try: l_name = raw['from_user']['last_name']
+	except KeyError: l_name = ''
 
-	#return data
-	return UID, GID, msg, first_name
+	try: username = raw['from_user']['username']
+	except KeyError: username = ''
+
+	try: lang = raw['from_user']['language_code']
+	except KeyError: lang = ''
+
+	data = {
+		'user': {
+			'id': raw['from_user']['id'],
+			'f_name': raw['from_user']['first_name'],
+			'l_name': l_name,
+			'restricted': raw['from_user']['is_restricted'],
+			'verified': raw['from_user']['is_verified'],
+			'scam': raw['from_user']['is_scam'],
+			'status': raw['from_user']['status'],
+			'username': username,
+			'lang': lang
+		},
+		'group': {
+			'id': raw['chat']['id'],
+			'restricted': raw['chat']['is_restricted'],
+			'verified': raw['chat']['is_verified'],
+			'scam': raw['chat']['is_scam']
+		},
+		'message': raw['text']
+	}
+
+	return data
 
 def check_command(message, command, delete):
 
-	UID, GID, msg, first_name = get_data(message)
+	data = get_data(message)
+	msg = data['message']
 	err = False
 
 	# Handle empty argument
@@ -43,4 +67,4 @@ def check_command(message, command, delete):
 	if err: return 'err'
 	else: 
 		if delete: message.delete()
-		else: return argument
+		return argument
